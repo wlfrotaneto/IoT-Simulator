@@ -1,19 +1,23 @@
 import socket, random, time
 
+#Initial variables
 nameClient = "Caminhao"
 caminhaoID = "666"
 centralID = "2424"
 containerID = "1691"
 
+#Read TXT file
 devicesTxt = open('lista_dispositivos.txt', 'r')
 linesDevices = devicesTxt.readlines()
 
+#Search TCP Server Host inside TXT with the ID
 def findServerHost(id):
     for line in linesDevices:
         if(line.count(id) > 0):
             listFind = line.split(' ')
     return listFind
     
+#Connection to the Central Server
 def connectCentral(HOST, PORT):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
@@ -21,6 +25,7 @@ def connectCentral(HOST, PORT):
         data = s.recv(1024)
     return repr(data)
 
+#Connection to the Container Server
 def connectContainer(HOST, PORT):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
@@ -28,12 +33,15 @@ def connectContainer(HOST, PORT):
         data = s.recv(1024)
     return repr(data)
 
+#Wait random time with print to destination
 def waitRandomTime(message):
     randomTime = random.randint(5, 20)
     print(message + ": " + str(randomTime))
     time.sleep(randomTime)
 
+#Runs all code in respective order
 def runSimulation():
+
     #Searches Central TCP Host
     centralHost = findServerHost(centralID)
     print('Central Host: ' + centralHost[1] + ' | ' + centralHost[2].split('\n')[0])
@@ -59,4 +67,5 @@ def runSimulation():
     #Wait Time to arrive at Central
     waitRandomTime('Tempo para retornar a Central')
 
+#Loop Simulation Run
 while(True): runSimulation()
