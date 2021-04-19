@@ -18,28 +18,25 @@ def findServerHost(id):
     return listFind
     
 #Connection to the Central Server
-def connectCentral(HOST, PORT):
+def connectCentral(HOST, PORT, type):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
-        s.sendall(b'LIVRE ' + caminhaoID.encode() + b'\n\n')
-        while(True):
-            time.sleep(0.1)
-            data = s.recv(256)
-            if data:
-                break
-    return repr(data)
+        if(type == 0):
+            s.sendall(b'LIVRE ' + caminhaoID.encode() + b'\n')
+            while(True):
+                time.sleep(0.1)
+                data = s.recv(1024)
+                if data:
+                    break
+            return repr(data)
+        if(type == 1):
+            s.sendall(b'COLETA_FINALIZADA ' + caminhaoID.encode() + b'\n')
 
 #Connection to the Container Server
 def connectContainer(HOST, PORT):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
-        s.sendall(b'CHEGUEI_CONTAINER ' + caminhaoID.encode() + b'\n\n')
-        while(True):
-            time.sleep(0.1)
-            data = s.recv(256)
-            if data:
-                break
-    return repr(data)
+        s.sendall(b'CHEGUEI_CONTAINER ' + caminhaoID.encode() + b'\n')
 
 #Wait random time with print to destination
 def waitRandomTime(message):
@@ -55,12 +52,12 @@ def runSimulation():
     print('Central Host: ' + centralHost[1] + ' | ' + centralHost[2].split('\n')[0])
 
     #Connects to Central TCP Server
-    centralData = connectCentral(centralHost[1], int(centralHost[2].split('\n')[0]))
+    centralData = connectCentral(centralHost[1], int(centralHost[2].split('\n')[0]), 0)
     centralResponse = centralData.split("b'")[1].split("'")[0]
     print('Central: ' + centralResponse)
     
     #Searches Container TCP Host
-    containerID = centralResponse.split('COLETAR ')[1]
+    containerID = centralResponse.split('COLETAR ')[1].split('\\')[0]
     containerHost = findServerHost(containerID)
     print('Container Host: ' + containerHost[1] + ' | ' + containerHost[2].split('\n')[0])
 
@@ -68,12 +65,12 @@ def runSimulation():
     waitRandomTime('Tempo para chegar ao Container')
 
     #Connects to Container TCP Server
-    containerData = connectContainer(containerHost[1], int(containerHost[2].split('\n')[0]))
-    containerResponse = containerData.split("b'")[1].split("'")[0]
-    print('Container: ' + containerResponse)
+    connectContainer(containerHost[1], int(containerHost[2].split('\n')[0]))
 
     #Wait Time to arrive at Central
     waitRandomTime('Tempo para retornar a Central')
+
+    connectCentral(centralHost[1], int(centralHost[2].split('\n')[0]), 1)
 
 #Loop Simulation Run
 while(True): runSimulation()
