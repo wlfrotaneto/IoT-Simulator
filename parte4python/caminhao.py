@@ -21,16 +21,24 @@ def findServerHost(id):
 def connectCentral(HOST, PORT):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
-        s.sendall(b'LIVRE ' + caminhaoID.encode())
-        data = s.recv(1024)
+        s.sendall(b'LIVRE ' + caminhaoID.encode() + b'\n\n')
+        while(True):
+            time.sleep(0.1)
+            data = s.recv(256)
+            if data:
+                break
     return repr(data)
 
 #Connection to the Container Server
 def connectContainer(HOST, PORT):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
-        s.sendall(b'CHEGUEI_CONTAINER ' + caminhaoID.encode())
-        data = s.recv(1024)
+        s.sendall(b'CHEGUEI_CONTAINER ' + caminhaoID.encode() + b'\n\n')
+        while(True):
+            time.sleep(0.1)
+            data = s.recv(256)
+            if data:
+                break
     return repr(data)
 
 #Wait random time with print to destination
