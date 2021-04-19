@@ -70,6 +70,7 @@ def runSimulation():
     #Wait Time to arrive at Central
     waitRandomTime('Tempo para retornar a Central')
 
+    #Connects to Central TCP Server
     connectCentral(centralHost[1], int(centralHost[2].split('\n')[0]), 1)
 
 #Loop Simulation Run
