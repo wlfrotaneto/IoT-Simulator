@@ -10,7 +10,7 @@ const server = net.createServer(conn => {
         console.log('Client connected.');
 
         conn.on('data', data => {
-            conn.write('Server: Client connected.');
+            conn.write('COLETAR 1691');
             conn.write(nameServer + ' ' + (serverActivated ? 'ATIVADO' : 'DESATIVADO') + ' ' + updateTime/1000);
             if(serverActivated) {
                 console.log('Client sent: ' + data);
